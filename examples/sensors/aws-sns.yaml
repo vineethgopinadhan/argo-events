@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: aws-sns
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  subscription:
+    http:
+      port: 9300
+  dependencies:
+    - name: test-dep
+      gatewayName: aws-sns
+      eventName: example
+  triggers:
+    - template:
+        name: sns-workflow
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: aws-sns-worfklow-
+              spec:
+                entrypoint: whalesay
+                arguments:
+                  parameters:
+                  - name: message
+                    # value will be overridden by the event payload
+                    value: hello world
+                templates:
+                - name: whalesay
+                  inputs:
+                    parameters:
+                    - name: message
+                  container:
+                    image: docker/whalesay:latest
+                    command: [cowsay]
+                    args: ["{{inputs.parameters.message}}"]
+          parameters:
+            - src:
+                dependencyName: test-dep
+              dest: spec.arguments.parameters.0.value

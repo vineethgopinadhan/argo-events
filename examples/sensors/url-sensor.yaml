@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  subscription:
+    http:
+      port: 9300
+  dependencies:
+    - name: test-dep
+      gatewayName: webhook
+      eventName: example
+  triggers:
+    - template:
+        name: url-workflow-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            url:
+              path: "https://raw.githubusercontent.com/argoproj/argo/master/examples/hello-world.yaml"
+              verifycert: false

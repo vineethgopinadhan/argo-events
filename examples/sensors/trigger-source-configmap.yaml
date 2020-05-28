@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  subscription:
+    http:
+      port: 9300
+  dependencies:
+    - name: test-dep
+      gatewayName: webhook
+      eventName: example
+  triggers:
+    - template:
+        name: workflow-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            configmap:
+              name: workflow-cm
+              # optional.
+              # Defaults to sensor namespace.
+              namespace: argo-events
+              # key within configmap whose corresponding value contains the workflow definition
+              key: wf

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: file-event-source
+spec:
+  type: file
+  file:
+    example:
+      watchPathConfig:
+        # directory to watch
+        directory: /test-data/
+        # path to watch
+        path: x.txt
+      # type of the event
+      # supported types are: CREATE, WRITE, REMOVE, RENAME, CHMOD
+      eventType: CREATE
+
+#    example-with-path-regex:
+#      watchPathConfig:
+#        directory: "/bin/"
+#        # the gateway will watch events for path that matches following regex
+#        pathRegexp: "([a-z]+).txt"
+#      eventType: "CREATE"

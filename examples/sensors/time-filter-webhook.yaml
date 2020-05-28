@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  subscription:
+    http:
+      port: 9300
+  dependencies:
+    - name: test-dep
+      gatewayName: webhook
+      eventName: example
+      filters:
+        time:
+          start: "22:14:05"
+          stop: "23:04:05"
+  triggers:
+    - template:
+        name: hello-world-workflow-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: time-filter-hello-world-
+              spec:
+                entrypoint: whalesay
+                templates:
+                  -
+                    container:
+                      args:
+                        - "hello world"
+                      command:
+                        - cowsay
+                      image: "docker/whalesay:latest"
+                    name: whalesay
