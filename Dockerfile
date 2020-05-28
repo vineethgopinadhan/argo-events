@@ -1,6 +1,6 @@
 FROM golang:alpine3.11
 
-RUN apk add -y ca-certificates
+RUN apk add ca-certificates
 
 RUN apk update \
  && apk upgrade \
