@@ -4,7 +4,8 @@ RUN apk add ca-certificates
 
 RUN apk update \
  && apk upgrade \
- && apk add git
+ && apk add git \
+ && apk add curl
 
 
 RUN curl -kLo /usr/local/bin/dep \
