@@ -1,11 +1,10 @@
-FROM golang:alpine3.11
+FROM golang:1.13.4
 
-RUN apk add ca-certificates
+RUN apt-get install -y ca-certificates
 
-RUN apk update \
- && apk upgrade \
- && apk add git \
- && apk add curl
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get install -y git
 
 
 RUN curl -kLo /usr/local/bin/dep \
