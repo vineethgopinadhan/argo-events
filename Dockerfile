@@ -1,4 +1,4 @@
-FROM golang:1.14.0-alpine3.11
+FROM golang:alpine3.11
 
 RUN apt-get install -y ca-certificates
 
